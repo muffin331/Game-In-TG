@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0a0f1e">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<title>Zynor Games</title>
+<style>
+:root{--bg:#0a0f1e;--card:#131b30;--card2:#1a2442;--line:#25304f;--tx:#eef2ff;--mu:#8d9bbd;--ac:#5fd0ff;--ac2:#7a86ff;--ok:#4ade80;--bad:#ff5d6c;--gold:#ffc83d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{min-height:100vh;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px calc(env(safe-area-inset-bottom,0px) + 24px);background:radial-gradient(120% 60% at 50% 0,#1a2650 0,var(--bg) 60%) no-repeat}
+.wrap{max-width:480px;margin:0 auto}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+button:active{transform:scale(.97)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+
+/* шапка */
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.brand{font-size:22px;font-weight:800;letter-spacing:.5px}
+.brand b{color:var(--ac)}
+.right{display:flex;gap:8px;align-items:center}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-weight:700;display:flex;gap:6px;align-items:center}
+.pill.bump{animation:bump .3s}
+@keyframes bump{50%{transform:scale(1.1);border-color:var(--ac)}}
+.icon{width:38px;height:38px;border-radius:50%;background:var(--card);border:1px solid var(--line);font-size:18px;display:grid;place-items:center}
+
+/* главная */
+h1{font-size:26px;margin:4px 0 4px}
+.sub{color:var(--mu);margin:0 0 18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.game{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;text-align:left;display:flex;flex-direction:column;gap:6px;min-height:140px}
+.game .em{font-size:38px}
+.game .nm{font-weight:700;font-size:17px}
+.game .ds{color:var(--mu);font-size:13px;line-height:1.3}
+.game.hot{background:linear-gradient(145deg,#1d3a6e,#2a2f78);border-color:#3b5bb0;grid-column:1/3;flex-direction:row;align-items:center;gap:16px;min-height:110px}
+.game.hot .em{font-size:56px}
+.game.soon{opacity:.5;cursor:default}
+.game.soon:active{transform:none}
+
+/* игра */
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.back{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 14px;font-weight:600}
+.bar h2{margin:0;font-size:20px}
+.stage{position:relative;height:290px;border-radius:24px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(#0b1330,#16224a 70%,#233267)}
+.stars{position:absolute;left:0;right:0;top:-200px;bottom:0;background-repeat:repeat}
+.s1{background-image:radial-gradient(1.5px 1.5px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 90px 120px,#bde,transparent),radial-gradient(1.5px 1.5px at 160px 60px,#fff,transparent),radial-gradient(1px 1px at 230px 170px,#fff,transparent);background-size:260px 200px;opacity:.8}
+.s2{background-image:radial-gradient(1px 1px at 50px 80px,#fff,transparent),radial-gradient(1px 1px at 140px 20px,#9cf,transparent),radial-gradient(1px 1px at 200px 140px,#fff,transparent);background-size:300px 200px;opacity:.5}
+.fly .s1{animation:drift .45s linear infinite}
+.fly .s2{animation:drift .9s linear infinite}
+@keyframes drift{to{transform:translateY(200px)}}
+.rocket{position:absolute;left:50%;top:44%;font-size:84px;transform:translate(-50%,-50%) rotate(-45deg);transition:filter .3s}
+.fly .rocket{animation:shake .12s linear infinite;filter:drop-shadow(0 18px 18px rgba(255,150,40,.55))}
+@keyframes shake{25%{margin:-2px 0 0 2px}75%{margin:2px 0 0 -2px}}
+.boom .rocket{animation:pop .4s ease-out;transform:translate(-50%,-50%)}
+@keyframes pop{from{transform:translate(-50%,-50%) scale(.3)}60%{transform:translate(-50%,-50%) scale(1.3)}}
+.mult{position:absolute;left:0;right:0;bottom:0;padding:34px 0 16px;text-align:center;font-size:52px;font-weight:800;font-variant-numeric:tabular-nums;background:linear-gradient(transparent,rgba(8,12,28,.85))}
+.boom .mult{color:var(--bad)}
+.won .mult{color:var(--ok)}
+.msg{min-height:24px;text-align:center;margin:12px 0;color:var(--mu);font-weight:500}
+.msg.ok{color:var(--ok)}.msg.bad{color:var(--bad)}
+.hist{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;min-height:30px}
+.hist span{flex:none;padding:5px 10px;border-radius:999px;font-size:13px;font-weight:700;background:var(--card);border:1px solid var(--line)}
+.hist .hi{color:var(--ok)}.hist .lo{color:var(--bad)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:14px}
+.lbl{color:var(--mu);font-size:13px;margin:0 0 8px}
+.bet{width:100%;padding:14px;font-size:22px;font-weight:700;text-align:center;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--tx)}
+.chips{display:flex;gap:8px;margin:10px 0 14px}
+.chips button{flex:1;padding:10px 0;border-radius:12px;background:var(--card2);font-weight:600;font-size:14px}
+.go{width:100%;padding:17px;border-radius:16px;font-size:20px;font-weight:800;color:#06102a;background:linear-gradient(90deg,var(--ac),var(--ac2))}
+.go.cash{background:linear-gradient(90deg,#7df09b,#e5f56a)}
+.go:disabled{opacity:.5}
+.note{color:var(--mu);font-size:12px;text-align:center;margin-top:14px;line-height:1.4}
+.hide{display:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">ZYNOR <b>Games</b></div>
+    <div class="right">
+      <button class="icon" id="snd" aria-label="Звук">🔊</button>
+      <div class="pill" id="balPill">🪙 <span id="bal">0</span></div>
+    </div>
+  </div>
+  <main id="app"></main>
+</div>
+
+<script>
+/* ===== Telegram ===== */
+const tg=window.Telegram&&Telegram.WebApp;
+try{tg.ready();tg.expand();tg.setHeaderColor('#0a0f1e');tg.setBackgroundColor('#0a0f1e')}catch(e){}
+const buzz=(t)=>{try{t==='ok'||t==='bad'?tg.HapticFeedback.notificationOccurred(t==='ok'?'success':'error'):tg.HapticFeedback.impactOccurred('medium')}catch(e){}};
+const $=s=>document.querySelector(s);
+const fmt=n=>Math.floor(n).toLocaleString('ru-RU');
+
+/* ===== Хранилище (потом заменим на сервер) ===== */
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+
+/* ===== Баланс (общий для всех игр) ===== */
+const App={
+  bal:store.get('bal',1000),
+  add(n){this.bal=Math.max(0,this.bal+n);store.set('bal',this.bal);this.draw(true)},
+  draw(bump){$('#bal').textContent=fmt(this.bal);if(bump){const p=$('#balPill');p.classList.remove('bump');void p.offsetWidth;p.classList.add('bump')}}
+};
+
+/* ===== Звук (генерируется в коде, файлы не нужны) ===== */
+const Snd=(()=>{
+  let ctx,nb,eng=null,on=store.get('snd',true);
+  const A=()=>{
+    if(!ctx){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;ctx=new C();
+      nb=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+    if(ctx.state==='suspended')ctx.resume();return ctx};
+  const noise=()=>{const s=ctx.createBufferSource();s.buffer=nb;s.loop=true;return s};
+  const tone=(f,t0,dur,type,vol)=>{const t=ctx.currentTime+t0,o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=type;o.frequency.value=f;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+dur+0.05)};
+  const S={
+    get on(){return on},
+    toggle(){on=!on;store.set('snd',on);if(!on)S.stop();return on},
+    click(){if(!on||!A())return;tone(520,0,.08,'triangle',.15)},
+    launch(){
+      if(!on||!A())return;S.stop();const t=ctx.currentTime;
+      const n=noise(),f=ctx.createBiquadFilter(),g=ctx.createGain();
+      f.type='bandpass';f.Q.value=.8;f.frequency.setValueAtTime(150,t);f.frequency.exponentialRampToValueAtTime(2200,t+1.2);
+      g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.5,t+.25);g.gain.exponentialRampToValueAtTime(.0001,t+1.6);
+      n.connect(f);f.connect(g);g.connect(ctx.destination);n.start(t);n.stop(t+1.7);
+      const o=ctx.createOscillator(),og=ctx.createGain(),lp=ctx.createBiquadFilter();
+      o.type='sawtooth';o.frequency.value=70;lp.type='lowpass';lp.frequency.value=400;
+      og.gain.setValueAtTime(.0001,t);og.gain.exponentialRampToValueAtTime(.07,t+.6);
+      o.connect(lp);lp.connect(og);og.connect(ctx.destination);o.start(t);eng={o,og,lp};
+    },
+    pitch(m){if(!eng)return;const t=ctx.currentTime,k=Math.min(m,25);
+      eng.o.frequency.setTargetAtTime(70+k*10,t,.1);eng.lp.frequency.setTargetAtTime(400+k*70,t,.1)},
+    stop(){if(!eng)return;const t=ctx.currentTime;eng.og.gain.cancelScheduledValues(t);
+      eng.og.gain.setTargetAtTime(.0001,t,.05);eng.o.stop(t+.4);eng=null},
+    win(){if(!on||!A())return;S.stop();[660,880,1320].forEach((f,i)=>tone(f,i*.09,.35,'sine',.25))},
+    boom(){
+      if(!on||!A())return;S.stop();const t=ctx.currentTime;
+      const n=noise(),f=ctx.createBiquadFilter(),g=ctx.createGain();
+      f.type='lowpass';f.frequency.setValueAtTime(1200,t);f.frequency.exponentialRampToValueAtTime(60,t+.8);
+      g.gain.setValueAtTime(.7,t);g.gain.exponentialRampToValueAtTime(.0001,t+.9);
+      n.connect(f);f.connect(g);g.connect(ctx.destination);n.start(t);n.stop(t+1);
+      const o=ctx.createOscillator(),og=ctx.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(35,t+.6);
+      og.gain.setValueAtTime(.6,t);og.gain.exponentialRampToValueAtTime(.0001,t+.7);o.connect(og);og.connect(ctx.destination);o.start(t);o.stop(t+.8);
+    }
+  };
+  return S;
+})();
+
+/* ===== ИГРА: Ракеты ===== */
+const crashHistory=store.get('hist',[]);
+function rockets(el){
+  el.innerHTML=`
+  <div class="stage" id="stage"><div class="stars s1"></div><div class="stars s2"></div>
+    <div class="rocket" id="rk">🚀</div><div class="mult" id="mult">1.00x</div></div>
+  <div class="msg" id="msg">Выбери ставку и жми «Играть»</div>
+  <div class="hist" id="hist"></div>
+  <div class="panel">
+    <p class="lbl">Ставка</p>
+    <input class="bet" id="bet" type="number" inputmode="numeric" min="1" value="10">
+    <div class="chips"><button data-a="half">½</button><button data-a="x2">×2</button><button data-a="10">10</button><button data-a="100">100</button><button data-a="max">Макс</button></div>
+    <button class="go" id="go">Играть</button>
+  </div>
+  <p class="note">Учебная игра: монеты виртуальные, их нельзя купить или вывести.</p>`;
+  const stage=$('#stage'),go=$('#go'),inp=$('#bet'),msg=$('#msg');
+  let run=false,bet=0,m=1,crash=1,t0=0,timer=null;
+
+  const say=(t,c)=>{msg.textContent=t;msg.className='msg '+(c||'')};
+  const drawHist=()=>{$('#hist').innerHTML=crashHistory.length?crashHistory.map(x=>`<span class="${x>=2?'hi':'lo'}">${x.toFixed(2)}x</span>`).join(''):'<span style="color:var(--mu)">Здесь появятся последние раунды</span>'};
+  const push=x=>{crashHistory.unshift(x);crashHistory.length=Math.min(crashHistory.length,12);store.set('hist',crashHistory);drawHist()};
+  const setMult=v=>{$('#mult').textContent=v.toFixed(2)+'x'};
+
+  el.querySelector('.chips').onclick=e=>{
+    const a=e.target.dataset.a;if(!a||run)return;Snd.click();
+    let v=Math.floor(+inp.value)||1;
+    if(a==='half')v=Math.max(1,Math.floor(v/2));else if(a==='x2')v=v*2;else if(a==='max')v=App.bal;else v=+a;
+    inp.value=Math.max(1,Math.min(v,Math.max(1,App.bal)))};
+
+  function finish(win){
+    clearInterval(timer);run=false;inp.disabled=false;go.classList.remove('cash');go.textContent='Играть';
+    stage.classList.remove('fly');
+    if(win){
+      const pay=Math.floor(bet*m);App.add(pay);push(crash);
+      stage.classList.add('won');Snd.win();buzz('ok');
+      say(`Забрал ${fmt(pay)} 🪙 (${pay>=bet?'+':''}${fmt(pay-bet)})`,'ok');
+    }else{
+      push(crash);m=crash;setMult(m);
+      stage.classList.add('boom');$('#rk').textContent='💥';Snd.boom();buzz('bad');
+      say(`Ракета взорвалась на ${crash.toFixed(2)}x`,'bad');
+    }
+    if(App.bal<1){App.add(1000);say('Монеты закончились. Добавили 1000 для практики.')}
+  }
+
+  go.onclick=()=>{
+    if(run){finish(true);return}
+    const b=Math.floor(+inp.value);
+    if(!(b>=1)){say('Введи ставку от 1','bad');return}
+    if(b>App.bal){say('Не хватает монет','bad');return}
+    bet=b;App.add(-bet);
+    crash=Math.min(1000,Math.max(1,0.97/(1-Math.random())));
+    run=true;m=1;t0=Date.now();inp.disabled=true;
+    stage.classList.remove('boom','won');stage.classList.add('fly');$('#rk').textContent='🚀';
+    go.classList.add('cash');go.textContent='Забрать';say('Летим...');setMult(1);
+    Snd.launch();buzz();
+    timer=setInterval(()=>{
+      m=Math.exp(0.00018*(Date.now()-t0));
+      if(m>=crash){finish(false);return}
+      setMult(m);Snd.pitch(m);
+      go.textContent='Забрать '+fmt(bet*m)+' 🪙';
+    },40);
+  };
+  drawHist();
+  /* при выходе из игры во время полёта возвращаем ставку */
+  return()=>{clearInterval(timer);Snd.stop();if(run)App.add(bet)};
+}
+
+/* ===== Список игр: чтобы добавить новую, допиши сюда ===== */
+const GAMES=[
+  {id:'rockets',em:'🚀',name:'Zynor Rockets',ds:'Лови множитель и забери выигрыш до взрыва',mount:rockets,hot:true},
+  {id:'g2',em:'🎲',name:'Кости',ds:'Скоро'},
+  {id:'g3',em:'🎡',name:'Колесо',ds:'Скоро'},
+  {id:'g4',em:'💣',name:'Мины',ds:'Скоро'},
+  {id:'g5',em:'🃏',name:'Карты',ds:'Скоро'}
+];
+
+/* ===== Экраны ===== */
+const app=$('#app');let cleanup=null;
+function home(){
+  if(cleanup){cleanup();cleanup=null}
+  const u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user;
+  app.innerHTML=`<h1>Привет${u&&u.first_name?', '+u.first_name.replace(/[<>&]/g,''):''}!</h1><p class="sub">Выбери игру</p>
+  <div class="grid">${GAMES.map(g=>`<button class="game ${g.hot?'hot':''} ${g.mount?'':'soon'}" data-id="${g.id}">
+    <span class="em">${g.em}</span><span><div class="nm">${g.name}</div><div class="ds">${g.ds}</div></span></button>`).join('')}</div>`;
+  app.querySelector('.grid').onclick=e=>{
+    const b=e.target.closest('.game');if(!b)return;
+    const g=GAMES.find(x=>x.id===b.dataset.id);if(g&&g.mount){Snd.click();open(g)}};
+}
+function open(g){
+  app.innerHTML=`<div class="bar"><button class="back" id="back">‹ Игры</button><h2>${g.name}</h2></div><div id="game"></div>`;
+  cleanup=g.mount($('#game'));
+  $('#back').onclick=()=>{Snd.click();home()};
+}
+
+/* ===== Старт ===== */
+const sb=$('#snd');sb.textContent=Snd.on?'🔊':'🔇';
+sb.onclick=()=>{sb.textContent=Snd.toggle()?'🔊':'🔇';Snd.click()};
+App.draw();home();
+</script>
+</body></html>
